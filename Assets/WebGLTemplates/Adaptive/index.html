@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+  <title>Color Model Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    #unity-container { width: 100%; height: 100%; position: relative; }
+    #unity-canvas { display: block; width: 100%; height: 100%; }
+    #unity-loading-bar {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    #unity-progress-bar-empty { width: 200px; height: 10px; background: #333; border-radius: 5px; }
+    #unity-progress-bar-full { height: 100%; background: #ff0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas"></canvas>
+    <div id="unity-loading-bar">
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function unityShowBanner(msg, type) {
+      console.log(`Unity banner: [${type}] ${msg}`);
+    }
+
+    var config = {
+      dataUrl: "Build/YudinaColorModel.data",
+      frameworkUrl: "Build/YudinaColorModel.framework.js",
+      codeUrl: "Build/YudinaColorModel.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "skrininshot",
+      productName: "YudinaColorModel",
+      productVersion: "1.0",
+      showBanner: unityShowBanner,
+    };
+
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    loadingBar.style.display = "block";
+
+    var unityWeight = 0.5;
+    var addressablesWeight = 0.5;
+    var unityProgress = 0;
+    var addressablesProgress = 0;
+
+    function updateBar() {
+      var total = unityWeight * unityProgress + addressablesWeight * addressablesProgress;
+      progressBarFull.style.width = (total * 100) + "%";
+    }
+
+    window.SetAddressablesProgress = function(progress) {
+      if (typeof progress === 'number') {
+        addressablesProgress = progress;
+        updateBar();
+      }
+    };
+
+    window.AddressablesLoaded = function() {
+      addressablesProgress = 1;
+      updateBar();
+      loadingBar.style.display = "none";
+    };
+
+    var script = document.createElement("script");
+    script.src = "Build/YudinaColorModel.loader.js";
+    script.onload = () => {
+      createUnityInstance(document.querySelector("#unity-canvas"), config, (progress) => {
+        unityProgress = progress;
+        updateBar();
+      }).then((unityInstance) => {
+        unityProgress = 1;
+        updateBar();
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

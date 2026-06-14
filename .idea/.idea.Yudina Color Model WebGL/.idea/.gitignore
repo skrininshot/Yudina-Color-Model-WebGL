@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Rider ignored files
+/contentModel.xml
+/modules.xml
+/projectSettingsUpdater.xml
+/.idea.Yudina Color Model WebGL.iml
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
