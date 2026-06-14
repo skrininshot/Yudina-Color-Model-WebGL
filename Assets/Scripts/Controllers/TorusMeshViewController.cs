@@ -64,11 +64,9 @@ namespace Controllers
                 float cutAngle = Mathf.Repeat(sliceKnob.Value, 360f);
                 float angleStep = 360f / actualRingCount;
                 int halfCount = actualRingCount / 2;
-
-                // Индекс кольца, внутри которого находится линия среза (оно будет скрыто)
+                
                 int hiddenStart = Mathf.FloorToInt(cutAngle / angleStep) % actualRingCount;
-
-                // Массив видимости размером с реальное число колец
+                
                 bool[] visibility = new bool[actualRingCount];
                 for (int i = 0; i < halfCount; i++)
                 {
